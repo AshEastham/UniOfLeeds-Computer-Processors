@@ -39,5 +39,39 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
+        Not(x=instruction[15], out=Ainstruction);
+        Not(x=Ainstruction, out=Cinstruction);
+        
+        And(x=Cinstruction, y=instruction[5], out=ALUtoA);    
+        Mux16(x=instruction, y=ALUout, sel=ALUtoA, out=Aregin);
+        
+        Or(x=Ainstruction, y=ALUtoA, out=loadA);   
+        ARegister(in=Aregin, load=loadA, out=Aout);
+        
+        Mux16(x=Aout, y=inM, sel=instruction[12], out=AMout);   
+
+        And(x=Cinstruction, y=instruction[4], out=loadD);
+        DRegister(in=ALUout, load=loadD, out=Dout);    
+        
+        ALU(x=Dout, y=AMout, zx=instruction[11], nx=instruction[10], 
+            zy=instruction[9], ny=instruction[8], f=instruction[7],
+            no=instruction[6], out=ALUout, zr=ZRout, ng=NGout); 
+            
+        // Set outputs for writing memory
+        Or16(x=false, y=Aout, out[0..14]=addressM);
+        Or16(x=false, y=ALUout, out=outM);
+        And(x=Cinstruction, y=instruction[3], out=writeM);
+        
+        // calc PCload & PCinc - whether to load PC with A reg
+        And(x=ZRout, y=instruction[1], out=jeq);   
+        And(x=NGout, y=instruction[2], out=jlt);   
+        Or(x=ZRout, y=NGout, out=zeroOrNeg);
+        Not(x=zeroOrNeg, out=positive);            
+        And(x=positive, y=instruction[0], out=jgt); 
+        Or(x=jeq, y=jlt, out=jle);
+        Or(x=jle, y=jgt, out=jumpToA);              
+        And(x=Cinstruction, y=jumpToA, out=PCload); 
+        Not(x=PCload, out=PCinc);                 
+        PC(x=Aout, inc=PCinc, load=PCload, reset=reset, out[0..14]=pc);
 
 }

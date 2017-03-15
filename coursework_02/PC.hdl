@@ -16,5 +16,11 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
+	    Inc16(x = feedback, out = pc);
 
+	    Mux16(x = feedback, y = pc, sel = inc, out = w0);
+	    Mux16(x = w0, y = x, sel = load, out = w1);
+	    Mux16(x = w1, y = false, sel = reset, out = cout);
+
+	    Register(x = cout, load = true, out = out, out = feedback);
 }
