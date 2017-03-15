@@ -22,49 +22,28 @@ CHIP ALU {
 
     PARTS:
 	    Mux16(x[0..15]=x, y[0..15]=false, sel=zx, out[0..15]=zxoutputx);
-<<<<<<< HEAD
 	    Not16(x[0..15]=zxoutputx, out[0..15]=notx);
 	    Mux16(x[0..15]=zxoutputx, y[0..15]=notx, sel=nx, out[0..15]=nxoutputx);
 
 	    Mux16(x[0..15]=y, y[0..15]=false, sel=zy, out[0..15]=zyoutputy);
 	    Not16(x[0..15]=zyoutputy, out[0..15]=noty);
-=======
-	    Not16(in[0..15]=zxoutputx, out[0..15]=notx);
-	    Mux16(x[0..15]=zxoutputx, y[0..15]=notx, sel=nx, out[0..15]=nxoutputx);
-
-	    Mux16(x[0..15]=y, y[0..15]=false, sel=zy, out[0..15]=zyoutputy);
-	    Not16(in[0..15]=zyoutputy, out[0..15]=noty);
->>>>>>> cdcdb7f8e9f90d45ec0cbd2b01aa6983e0fd6524
 	    Mux16(x[0..15]=zyoutputy, y[0..15]=noty, sel=ny, out[0..15]=nyoutputy);
 
 	    Add16(x[0..15]=nxoutputx, y[0..15]=nyoutputy, out[0..15]=xplusy);
 	    And16(x[0..15]=nxoutputx, y[0..15]=nyoutputy, out[0..15]=xandy);
 	    Mux16(x[0..15]=xandy, y[0..15]=xplusy, sel=f, out[0..15]=fout);
 
-<<<<<<< HEAD
 	    Not16(x[0..15]=fout, out[0..15]=notfout);
-=======
-	    Not16(in[0..15]=fout, out[0..15]=notfout);
->>>>>>> cdcdb7f8e9f90d45ec0cbd2b01aa6983e0fd6524
 
 	    // Output 'out'
 	    Mux16(x[0..15]=fout, y[0..15]=notfout, sel=no, out[0..7]=lowfinalout, out[8..15]=highfinalout, out[15]=ng, out=out);
 	    
 	    // Now set the zr and ng outputs
-<<<<<<< HEAD
 	    Or8Way(x[0..7]=lowfinalout, out=lowout);
 	    Or8Way(x[0..7]=highfinalout, out=highout);
-=======
-	    Or8Way(in[0..7]=lowfinalout, out=lowout);
-	    Or8Way(in[0..7]=highfinalout, out=highout);
->>>>>>> cdcdb7f8e9f90d45ec0cbd2b01aa6983e0fd6524
 
 	    // if lowout=0 and highout=0, zr = 1, else zr = 0
 
 	    Or(x=lowout, y=highout, out=xyorout);
-<<<<<<< HEAD
 	    Not(x=xyorout, out=zr);
-=======
-	    Not(in=xyorout, out=zr);
->>>>>>> cdcdb7f8e9f90d45ec0cbd2b01aa6983e0fd6524
 }
